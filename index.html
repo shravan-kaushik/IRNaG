@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IRNaG: Interactive Random Name Generator</title>
+    <!-- JQUERY -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- BULMA -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css">
+    <!-- VUE -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.min.js"></script>
+    <!-- TRIP -->
+    <link rel="stylesheet" type="text/css" href="trip.nodep.min.css" />
+    <script src="trip.min.js"></script>
+    <!-- ALERTIFY -->
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" />
+    <!-- MY STYLESHEETS -->
+    <link rel="stylesheet" href="index.css">
+    <!-- MY SCRIPTS -->
+    <script src="name_generator.js"></script>
+    <script src="index.js"></script>
+</head>
+
+<body>
+    <section class="hero-body is-dark has-text-centered">
+        <div class="container">
+            <h1 class="title is-size-1-desktop is-size-4-touch">
+                IRNaG
+            </h1>
+            <h2 class="subtitle is-size-5-desktop is-size-7-touch">
+                An <b>i</b>nteractive <b>r</b>andom <b>na</b>me <b>g</b>enerator powered by <a href="http://setosa.io/ev/markov-chains/">Markov magic!</a>
+            </h2>
+        </div>
+    </section>
+    <div class="hero-body" id="app">
+        <div class="container">
+            <div class="columns is-mobile">
+                <div class="column">
+                    <div class="panel">
+                        <p class="panel-heading is-size-5-desktop is-size-7-touch">
+                            Generated names
+                        </p>
+                        <a class="panel-block result-name is-size-6-desktop is-size-7-touch" v-for="(name, index) in result_names" v-on:click="add_name(name)">{{name}}</a>
+                        <div class="panel-block">
+                            <button id="button_generate" class="button is-primary is-fullwidth is-size-6-desktop is-size-7-touch" v-on:click="gen_names()">Generate</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="panel">
+                        <div class="panel-heading is-size-5-desktop is-size-7-touch">
+                            <span>Names you like</span>
+                        </div>
+                        <div class="panel-block">
+                            <div class="control field has-addons is-expanded">
+                                <div class="control is-expanded">
+                                    <input id="input_new_name" class="input is-primary is-size-6-desktop is-size-7-touch" type="text" placeholder="Add a name..." v-model="new_name" v-on:keyup.enter="add_name(new_name)">
+                                </div>
+                                <div class="control">
+                                    <a class="button is-primary is-size-6-desktop is-size-7-touch" v-on:click="add_name(new_name)">Add</a>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="panel-block is-size-6-desktop is-size-7-touch" v-for="(name, index) in source_names" v-on:click="remove_name(name)">{{name}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODALS -->
+    <div id="modal-need-at-least-one-name" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="message is-warning">
+                <div class="message-header">
+                    <div class="modal-title is-size-6-desktop is-size-7-touch"><strong>Oops!</strong></div>
+                </div>
+                <div class="message-body is-size-6-desktop is-size-7-touch">
+                    You need to enter at least one name!
+                </div>
+            </div>
+        </div>
+        <button class="modal-close is-large"></button>
+    </div>
+    <div id="modal-failed-to-create-names" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="message is-warning">
+                <div class="message-header">
+                    <div class="modal-title is-size-6-desktop is-size-7-touch"><strong>Sorry!</strong></div>
+                </div>
+                <div class="message-body is-size-6-desktop is-size-7-touch">
+                    Failed to generate new names. This happens when there isn't enough data to create new names. So, try adding more names you like. The more varied they are, the better.
+                </div>
+            </div>
+        </div>
+        <button class="modal-close is-large"></button>
+    </div>
+    <div id="modal-confirm-remove" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="modal-title is-size-6-desktop is-size-7-touch">Do you want to remove '{{name_str}}'?</div>
+            </div>
+            <div class="modal-footer">
+                <div class="field is-grouped is-grouped-right">
+                    <p class="control">
+                        <a class="button is-size-6-desktop is-size-7-touch">
+                          Yes
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-primary is-size-6-desktop is-size-7-touch">
+                          No
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="container">
+            <p class="content has-text-centered is-size-7">
+                Licensed under the <a href="http://opensource.org/licenses/MIT">MIT license</a></br>&copy; 2017 Shravan Kaushik.
+            </p>
+        </div>
+    </footer>
+</body>
+
+</html>
